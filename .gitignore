@@ -2,3 +2,6 @@ infant-dataset/images
 original-data/images
 temp/
 .venv
+infant-dataset/annotations2.json
+infant-dataset/annotations3.json
+convert_format_rough.py

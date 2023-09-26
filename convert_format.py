@@ -85,201 +85,124 @@ original-data/images/18030/126507318/126507318_1.jpg
 original-data/images/18222/126720846/126720846_1.jpg
 '''
 
-file_map = [
-    "original-data/images/17962/126524578/126524578_1.jpg",
-    "original-data/images/18027/126499894/126499894_1.jpg",
-    "original-data/images/18028/126500381/126500381_1.jpg",
-    "original-data/images/18030/126507318/126507318_1.jpg",
-    "original-data/images/18222/126720846/126720846_1.jpg"
-]
-# print(file_map[0].split('_')[1][0])
-print(glob.glob('./original-data/*/*/*/*'))
+json_idx = [17962, 18027, 18028, 18030, 18222]
+
+image_list = []
+for j in json_idx:
+    imgs = glob.glob(f'original-data/images/{j}/*/*.jpg')
+    imgs = sorted(imgs, key=lambda x: int(re.sub(r"[^0-9]", "", x.split("_")[-1])))
+    image_list += imgs
+
 json_files = glob.glob("./original-data/*.json")
+idx = 0
 
-for json_file in range(len(json_files)):
+new_annot_file = {"images": [], "annotations": [], "categories": []}
+new_annot_file["categories"].append(
+    {
+        "id": 1,
+        "name": "infant",
+        "supercategory": None,
+        "keypoints": [
+            "head_top",
+            "right_eye",
+            "left_eye",
+            "nose",
+            "mouth",
+            "right_ear",
+            "left_ear",
+            "chin",
+            "notch_of_sternum",
+            "xiphoid_process",
+            "right_shoulder_joint",
+            "left_shoulder_joint",
+            "right_elbow_joint",
+            "left_elbow_joint",
+            "right_wrist_joint",
+            "left_wrist_joint",
+            "mid hip",
+            "right_pelvis, ASIS",
+            "left_pelvis, ASIS",
+            "public_symphysis",
+            "right_hip_joint",
+            "left_hip_joint",
+            "right_knee_joint",
+            "left_knee_joint",
+            "right_ankle_joint",
+            "left_ankle_joint",
+        ],
+        "skeleton": [],
+    },
+)
 
-    with open(f"{json_files[json_file]}", "r") as f:
-        annots = json.load(f)  
+for js, json_file in enumerate(json_files):
+    print('json: ', json_file)
+    with open(f"{json_files[js]}", "r") as f:
+        annots = json.load(f)
 
     annot_dict = defaultdict(list)
 
     for annot in annots["annotations"]:
         annot_dict[annot["id"]].append(annot)
-
-    new_annot_file = {"images": [], "annotations": [], "categories": []}
-    new_annot_file["categories"].append(
-        {
-            "id": 1,
-            "name": "infant",
-            "supercategory": None,
-            "keypoints": [
-                "head_top",
-                "right_eye",
-                "left_eye",
-                "nose",
-                "mouth",
-                "right_ear",
-                "left_ear",
-                "chin",
-                "notch_of_sternum",
-                "xiphoid_process",
-                "right_shoulder_joint",
-                "left_shoulder_joint",
-                "right_elbow_joint",
-                "left_elbow_joint",
-                "right_wrist_joint",
-                "left_wrist_joint",
-                "mid hip",
-                "right_pelvis, ASIS",
-                "left_pelvis, ASIS",
-                "public_symphysis",
-                "right_hip_joint",
-                "left_hip_joint",
-                "right_knee_joint",
-                "left_knee_joint",
-                "right_ankle_joint",
-                "left_ankle_joint",
-            ],
-            "skeleton": [],
-        },
-    )
-
+        
 
     annot_id = 1
-    for idx, image_info in tqdm(enumerate(annots["images"])):
-        print('')
-        print('idx', idx)
-        print("id",     image_info["id"])
-        print(file_map[idx].split("_")[-1])
-        # print(file_map[idx].split('_')[1][0])
-        file_name = file_map[idx].replace(file_map[idx].split('_')[-1], f'{image_info["id"]}.jpg')
-        print(file_name)
-        # file_name = f"original-data/images/17962/126524578/126524578_{image_info['id']}.jpg"
-        modified_path = file_name.split("/")
+    for image_info in (annots["images"]):
+        print(idx)
+        file_name = image_list[idx].replace(image_list[idx].split('_')[-1], f'{image_info["id"]}.jpg')
+        modified_path = file_name.split("\\")
         del modified_path[-2]
+        # print(modified_path)
         modified_path = "/".join(modified_path)
+        # modified_path = os.path.join(modified_path[0], modified_path[1])
         print(modified_path)
-    #     w, h = Image.open(file_name).convert("RGB").size
-    #     image_result = {
-    #         "id": image_info["id"],
-    #         "width": w,
-    #         "height": h,
-    #         "file_name": modified_path,
-    #     }
-    #     new_annot_file["images"].append(image_result)
-    #     for annot in annot_dict[image_info["id"]]:
-    #         kp = np.array(annot["keypoints"]).reshape(-1, 3)
-    #         x1, y1, x2, y2 = kp[:, 0].min(), kp[:, 1].min(), kp[:, 0].max(), kp[:, 1].max()
-    #         w, h = x2 - x1, y2 - y1
-    #         annot_result = {
-    #             "id": annot_id,
-    #             "image_id": image_info["id"],
-    #             "category_id": 1,
-    #             "bbox": [[x1, y1, w, h]],
-    #             "area": (x2 - x1) * (y2 - y1),
-    #             "iscrowd": 0,
-    #             "segmentations": [],
-    #             "keypoints": annot["keypoints"],
-    #             "num_keypoints": int(kp.shape[0]),
-    #         }
-    #         new_annot_file["annotations"].append(annot_result)
-    #     annot_id += 1
+        w, h = Image.open(file_name).convert("RGB").size
+        image_result = {
+            "id": idx + 1,
+            "width": w,
+            "height": h,
+            "file_name": modified_path,
+        }
+        new_annot_file["images"].append(image_result)
 
-    # with open("infant-dataset/annotations2.json", "w", encoding="utf-8") as f:
-    #     json.dump(new_annot_file, f, indent="\t")
+        for annot in annot_dict[image_info["id"]]:
+            kp = np.array(annot["keypoints"]).reshape(-1, 3)
+            x1, y1, x2, y2 = kp[:, 0].min(), kp[:, 1].min(), kp[:, 0].max(), kp[:, 1].max()
+            w, h = x2 - x1, y2 - y1
+            annot_result = {
+                "id": idx + 1,
+                "image_id": idx + 1,
+                "category_id": 1,
+                "bbox": [[x1, y1, w, h]],
+                "area": (x2 - x1) * (y2 - y1),
+                "iscrowd": 0,
+                "segmentations": [],
+                "keypoints": annot["keypoints"],
+                "num_keypoints": int(kp.shape[0]),
+            }
+            new_annot_file["annotations"].append(annot_result)
+        annot_id += 1
+        idx += 1
 
-# paths = glob.glob("./original-data/*/*/*/*")
-# #
+    
+with open("infant-dataset/annotations.json", "w", encoding="utf-8") as f:
+    json.dump(new_annot_file, f, indent="\t")
 
-# # img_names = []
+img_path = [
+    "./original-data/images/17962/126524578/",
+    "./original-data/images/18027/126499894/",
+    "./original-data/images/18028/126500381/",
+    "./original-data/images/18030/126507318/",
+    "./original-data/images/18222/126720846/"
+]
 
-# # for i in range(1,6):
-# #     for val in path_data[f"path_data{i}"]:
-# #         print(val)
+for i in range(5):
+    jpgs = os.listdir(img_path[i])
 
-# # 상단경로 얻기
-# path_names = []
-# for i in range(1, 1000, 200):
-#     p1, p2 = Path(paths[i]).parts[-3:-1]
-#     path_names.append(p1 + "/" + p2)
-# # >>> ['17962/126524578', '18027/126499894', '18028/126500381', '18030/126507318', '18222/126720846']
+    new_path = f"./infant-dataset/images/{json_idx[i]}/"
+    if not os.path.exists(new_path):
+        os.mkdir(new_path)
 
-# # path_1, path_2 = Path(paths[0]).parts[-3:-1]
-# # path_17962 = path_1 + '/' + path_2
-
-
-# # jpg만 얻기
-# img_names = []
-# for i in range(0, 999, 200):
-#     imgs = []
-#     for j in range(i, i + 200):
-#         imgs.append(Path(paths[j]).parts[-1])
-#     imgs = sorted(imgs, key=lambda x: int(re.sub(r"[^0-9]", "", x.split("_")[-1])))
-#     img_names += imgs
-# # >>> 5 x 200 ea
-
-# # img_17962 = []
-# # for i in range(200):
-# #     img_17962.append(Path(paths[i]).parts[-1])
-# # img_17962 = sorted(img_17962, key=lambda x: int(re.sub(r"[^0-9]", "", x.split("_")[-1])))
-
-# # name_list = sorted(
-# #     qwer, key=lambda x: int(re.sub(r"[^0-9]", "", x.split("_")[-1]))
-# # )
-
-
-# # 최종경로(file_name) 얻기
-# file_names = []
-# for idx, i in enumerate(range(0, 999, 200)):
-#     for name in img_names[i : i + 200]:
-#         file_names.append(path_names[idx] + "/" + name)
-# # print(file_names)
-
-
-# print(Path(paths[0]).parts[-3])
-# # json 파일 이름
-# json_file_names = []
-# for i in range(5):
-#     json_file_name = f"{Path(paths[i]).parts[-3]}.json"
-#     json_file_names.append(json_file_name)
-# print(json_file_names)
-
-# sys.exit()
-
-# annot_by_ids = defaultdict(list)
-# annot_by_ids[1].append({"images": {}, "annotations": {}})
-# annot_by_ids[2].append({"what": "the"})
-# ids = 1
-
-# path_list = path.split("/")
-
-# print(len(paths))
-# path_data = {'path_data1': paths[:200],
-#              'path_data2': paths[200:400],
-#              'path_data3': paths[400:600],
-#              'path_data4': paths[600:800],
-#              'path_data5': paths[800:]}
-# path_data["path_data1"]
-
-# new_name_list = []
-# for i in range(len(name_list)):
-#     img_dir = path_list[-2]
-#     a = name_list[i].split("_")[-1]
-#     img_name = img_dir + "_" + a
-
-#     new_name_list.append(img_name)
-
-
-# # 뽑은 파일 이름으로 json 덮어쓰기
-# with open("infant-dataset/images/17962.json") as f:
-#     data = json.loads(f.read())
-
-# for i in range(len(data["images"])):
-#     data["images"][i]["file_name"] = new_name_list[i]
-
-
-# print(data["images"][0]["file_name"])
-# print(data["images"][10]["file_name"])
-
-# with open("infant-dataset/images/17962.json", "w", encoding="utf-8") as f:
-#     json.dump(data, f, indent="\t")
+    for jpg in jpgs:
+        print(img_path[i] + jpg)
+        print(new_path + jpg)
+        shutil.copy(img_path[i] + jpg, new_path + jpg)
