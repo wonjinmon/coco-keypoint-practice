@@ -17,9 +17,8 @@ from tqdm import tqdm
 # 1.1 id가 중복되어서 중복안되게끔 생성해줘야하고, 파일 경로 상대로 다시 셋팅해줘되고,
 # 그다음에 그 경로대로 original/ 폴더에 있는 이미지 infant-dataset 경로 복사해주기
 # 2. 키 포인트 추출
-# 2.1 annotations > keypoints이용해서 x,y 좌표얻음 
+# 2.1 annotations > keypoints이용해서 x,y 좌표얻음
 # 2.2 그 좌표를 통해 4개 좌표 뽑고 박스치기 (# x, y, w, h)
-
 
 
 """
@@ -78,8 +77,13 @@ from tqdm import tqdm
 },
 
 """
+json_files = glob.glob("./original-data/*.json")
 
-with open("original-data/17962.json", "r") as f:
+for json_file in json_files:
+    ...
+
+
+with open(f"{json_files[0]}", "r") as f:
     annots = json.load(f)
 
 annot_dict = defaultdict(list)
@@ -90,7 +94,9 @@ for annot in annots["annotations"]:
 new_annot_file = {"images": [], "annotations": [], "categories": []}
 new_annot_file["categories"].append(
     {
-        "id": 1, "name": "infant", "supercategory": None,
+        "id": 1,
+        "name": "infant",
+        "supercategory": None,
         "keypoints": [
             "head_top",
             "right_eye",
@@ -117,20 +123,19 @@ new_annot_file["categories"].append(
             "right_knee_joint",
             "left_knee_joint",
             "right_ankle_joint",
-            "left_ankle_joint"
+            "left_ankle_joint",
         ],
-        "skeleton": [
-        ]
+        "skeleton": [],
     },
 )
 
 
 annot_id = 1
 for image_info in tqdm(annots["images"]):
-    file_name = f"original-data/images/17962/126524578/126524578_{image_info['id']}.jpg" 
-    modified_path = file_name.split('/')
+    file_name = f"original-data/images/17962/126524578/126524578_{image_info['id']}.jpg"
+    modified_path = file_name.split("/")
     del modified_path[-2]
-    modified_path = '/'.join(modified_path)
+    modified_path = "/".join(modified_path)
     w, h = Image.open(file_name).convert("RGB").size
     image_result = {
         "id": image_info["id"],
@@ -146,7 +151,7 @@ for image_info in tqdm(annots["images"]):
             "id": annot_id,
             "image_id": image_info["id"],
             "category_id": 1,
-            "bbox": [[x1, y1, x2, y2]],  
+            "bbox": [[x1, y1, x2, y2]],
             "area": (x2 - x1) * (y2 - y1),
             "iscrowd": 0,
             "segmentations": [],
@@ -155,7 +160,7 @@ for image_info in tqdm(annots["images"]):
         }
         new_annot_file["annotations"].append(annot_result)
     annot_id += 1
-    
+
 with open("infant-dataset/annotations.json", "w", encoding="utf-8") as f:
     json.dump(new_annot_file, f, indent="\t")
 
