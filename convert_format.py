@@ -3,10 +3,8 @@ import numpy as np
 import os
 import glob
 import shutil
-import sys
 import re
 
-from pathlib import Path
 from collections import defaultdict
 from PIL import Image
 from tqdm import tqdm
@@ -130,12 +128,26 @@ new_annot_file["categories"].append(
             "right_ankle_joint",
             "left_ankle_joint",
         ],
-        "skeleton": [],
+        "skeleton": [
+            (0, 3), (1, 3),
+            (2, 3), (1, 5),
+            (2, 6), (3, 4),
+            (4, 7), (7, 8),
+            (8, 9), (8, 10),
+            (8, 11), (10, 12),
+            (11, 13), (12, 14),
+            (13, 15), (8, 16),
+            (16, 17), (16, 18),
+            (16, 19), (19, 20),
+            (19, 21), (20, 22),
+            (21, 23), (22, 24),
+            (23, 25),
+        ],
     },
 )
 
 for js, json_file in enumerate(json_files):
-    print("json: ", json_file)
+    # print("json: ", json_file)
     with open(f"{json_files[js]}", "r") as f:
         annots = json.load(f)
 
@@ -149,7 +161,8 @@ for js, json_file in enumerate(json_files):
         file_name = image_list[idx].replace(
             image_list[idx].split("_")[-1], f'{image_info["id"]}.jpg'
         )
-        modified_path = file_name.split("\\")
+        modified_path = file_name.replace("original-data/", "")
+        modified_path = modified_path.split("\\")
         del modified_path[-2]
         modified_path = "/".join(modified_path)
         w, h = Image.open(file_name).convert("RGB").size
