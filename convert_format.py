@@ -77,19 +77,19 @@ from tqdm import tqdm
 },
 """
 
-'''
+"""
 original-data/images/17962/126524578/126524578_1.jpg
 original-data/images/18027/126499894/126499894_1.jpg
 original-data/images/18028/126500381/126500381_1.jpg
 original-data/images/18030/126507318/126507318_1.jpg
 original-data/images/18222/126720846/126720846_1.jpg
-'''
+"""
 
 json_idx = [17962, 18027, 18028, 18030, 18222]
 
 image_list = []
 for j in json_idx:
-    imgs = glob.glob(f'original-data/images/{j}/*/*.jpg')
+    imgs = glob.glob(f"original-data/images/{j}/*/*.jpg")
     imgs = sorted(imgs, key=lambda x: int(re.sub(r"[^0-9]", "", x.split("_")[-1])))
     image_list += imgs
 
@@ -135,7 +135,7 @@ new_annot_file["categories"].append(
 )
 
 for js, json_file in enumerate(json_files):
-    print('json: ', json_file)
+    print("json: ", json_file)
     with open(f"{json_files[js]}", "r") as f:
         annots = json.load(f)
 
@@ -143,18 +143,15 @@ for js, json_file in enumerate(json_files):
 
     for annot in annots["annotations"]:
         annot_dict[annot["id"]].append(annot)
-        
 
     annot_id = 1
-    for image_info in (annots["images"]):
-        print(idx)
-        file_name = image_list[idx].replace(image_list[idx].split('_')[-1], f'{image_info["id"]}.jpg')
+    for image_info in tqdm(annots["images"]):
+        file_name = image_list[idx].replace(
+            image_list[idx].split("_")[-1], f'{image_info["id"]}.jpg'
+        )
         modified_path = file_name.split("\\")
         del modified_path[-2]
-        # print(modified_path)
         modified_path = "/".join(modified_path)
-        # modified_path = os.path.join(modified_path[0], modified_path[1])
-        print(modified_path)
         w, h = Image.open(file_name).convert("RGB").size
         image_result = {
             "id": idx + 1,
@@ -166,7 +163,12 @@ for js, json_file in enumerate(json_files):
 
         for annot in annot_dict[image_info["id"]]:
             kp = np.array(annot["keypoints"]).reshape(-1, 3)
-            x1, y1, x2, y2 = kp[:, 0].min(), kp[:, 1].min(), kp[:, 0].max(), kp[:, 1].max()
+            x1, y1, x2, y2 = (
+                kp[:, 0].min(),
+                kp[:, 1].min(),
+                kp[:, 0].max(),
+                kp[:, 1].max(),
+            )
             w, h = x2 - x1, y2 - y1
             annot_result = {
                 "id": idx + 1,
@@ -183,7 +185,7 @@ for js, json_file in enumerate(json_files):
         annot_id += 1
         idx += 1
 
-    
+
 with open("infant-dataset/annotations.json", "w", encoding="utf-8") as f:
     json.dump(new_annot_file, f, indent="\t")
 
@@ -192,7 +194,7 @@ img_path = [
     "./original-data/images/18027/126499894/",
     "./original-data/images/18028/126500381/",
     "./original-data/images/18030/126507318/",
-    "./original-data/images/18222/126720846/"
+    "./original-data/images/18222/126720846/",
 ]
 
 for i in range(5):
@@ -202,7 +204,7 @@ for i in range(5):
     if not os.path.exists(new_path):
         os.mkdir(new_path)
 
-    for jpg in jpgs:
-        print(img_path[i] + jpg)
-        print(new_path + jpg)
+    for jpg in tqdm(jpgs):
+        # print(img_path[i] + jpg)
+        # print(new_path + jpg)
         shutil.copy(img_path[i] + jpg, new_path + jpg)
