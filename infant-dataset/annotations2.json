@@ -1,0 +1,40 @@
+{
+	"images": [],
+	"annotations": [],
+	"categories": [
+		{
+			"id": 1,
+			"name": "infant",
+			"supercategory": null,
+			"keypoints": [
+				"head_top",
+				"right_eye",
+				"left_eye",
+				"nose",
+				"mouth",
+				"right_ear",
+				"left_ear",
+				"chin",
+				"notch_of_sternum",
+				"xiphoid_process",
+				"right_shoulder_joint",
+				"left_shoulder_joint",
+				"right_elbow_joint",
+				"left_elbow_joint",
+				"right_wrist_joint",
+				"left_wrist_joint",
+				"mid hip",
+				"right_pelvis, ASIS",
+				"left_pelvis, ASIS",
+				"public_symphysis",
+				"right_hip_joint",
+				"left_hip_joint",
+				"right_knee_joint",
+				"left_knee_joint",
+				"right_ankle_joint",
+				"left_ankle_joint"
+			],
+			"skeleton": []
+		}
+	]
+}
