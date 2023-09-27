@@ -55,3 +55,10 @@ infant-dataset/
     ]
 }
 ```
+### Visualization
+
+"draw_bbox" 
+
+"draw_keypoints" 
+
+"draw_skeleton" 
