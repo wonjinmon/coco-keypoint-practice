@@ -13,6 +13,10 @@ infant-dataset/
             ...
         18028/
         ...
+        18030/
+        ...
+        18222/
+        ...
     annotations.json
 ```
 
@@ -24,7 +28,7 @@ infant-dataset/
             "id": "int",
             "width": "int",
             "height": "int",
-            "file_name": "images/17962/1265~_1.jpg",
+            "file_name": "images/17962/126524578_1.jpg",
             "license": "int", 
             "flickr_url": "str", 
             "coco_url": "str", 
@@ -62,3 +66,5 @@ infant-dataset/
 "draw_keypoints" 
 
 "draw_skeleton" 
+
+"draw_color_skeleton"

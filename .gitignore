@@ -9,3 +9,4 @@ convert_format_rough.py
 bbox/
 keypoints/
 skeleton/
+color_skeleton

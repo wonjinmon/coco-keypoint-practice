@@ -25,7 +25,7 @@ for idx, img_info in enumerate(data["images"]):
         x1, y1, _ = keypoints[n1]
         x2, y2, _ = keypoints[n2]
         draw.line((x1, y1, x2, y2), fill=(0, 0, 255), width=2)
-        
+
     for i, kp in enumerate(keypoints):
         x, y, _ = kp
         draw.ellipse((x - 5, y - 5, x + 5, y + 5), fill=(0, 0, 255), width=2)
