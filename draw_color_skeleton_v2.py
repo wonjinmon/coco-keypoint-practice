@@ -1,6 +1,5 @@
 import json
 
-from tqdm import tqdm
 from PIL import Image, ImageDraw
 
 import numpy as np
